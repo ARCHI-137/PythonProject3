@@ -1,0 +1,49 @@
+# .github/workflows/ci-cd.yml
+
+name: Build and Push to Docker Hub
+
+# Триггер: Запускать при пуше в ветку main
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    # Имя машины, на которой будем собирать (стандартная ubuntu)
+    runs-on: ubuntu-latest
+
+    env:
+      # Собираем имя образа из твоего логина и имени репозитория
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app
+      # Используем SHA коммита как тег для точной версионировки
+      TAG: latest-${{ github.sha }}
+
+    steps:
+      # Шаг 1: Проверить код из репозитория
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Шаг 2: Настроить Docker для входа в реестр
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Шаг 3: Собрать Docker-образ
+      - name: Build Docker image
+        id: docker-build
+        uses: docker/build-push-action@v5
+        with:
+          context: .              # Текущая директория (где лежит Dockerfile)
+          file: ./Dockerfile       # Путь к Dockerfile
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:${{ env.TAG }} # Имя и тег образа
+
+      # Шаг 4: Отправить собранный образ в Docker Hub
+      - name: Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:${{ env.TAG }}
+          push: true

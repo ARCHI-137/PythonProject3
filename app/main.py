@@ -6,4 +6,4 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"message": "Автоматизация — это круто! Версия 10.0"}
+    return {"message": "Автоматизация — это круто! Версия 11.0"}

@@ -35,8 +35,8 @@ jobs:
       - name: Debug push test
         run: |
           docker pull hello-world
-          docker tag hello-world ${{ secrets.DOCKERHUB_USERNAME }}/pythonproject3:debug
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pythonproject3:debug
+          docker tag hello-world ${{ secrets.DOCKERHUB_USERNAME }}/debugtest123:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/debugtest123:latest
 
       # Шаг 3: Собрать Docker-образ
       - name: Build Docker image
